@@ -125,6 +125,18 @@
 			font-size: 18px;
 			align-items: center;
 }
+	 #saveButton {
+            font-size: 18px;
+            background-color: #4caf50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            margin: 4px 2px;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
@@ -151,6 +163,9 @@
 	<div>
 		<button class="loadButton" onclick="loadVideoFromURL()">URL Video</button>
 		<button class="loadButton" onclick="loadAudioFromURL()">URL Audio</button>
+	</div>
+	<div>
+		<button id="saveButton" onclick="saveCombinedMedia()">Save</button>
 	</div>
     </div>
 
@@ -283,6 +298,22 @@ function pauseBothMedia() {
                 audioPlayer.currentTime = videoPlayer.currentTime;
             } else {
                 alert("Wait for the media to load.");
+            }
+        }
+	            function saveCombinedMedia() {
+            var combinedBlob = new Blob([videoPlayer.src, audioPlayer.src], { type: 'video/mp4' });
+
+            // Створіть посилання для скачування об'єднаного файлу
+            var link = document.createElement('a');
+            link.href = URL.createObjectURL(combinedBlob);
+
+            // Попросіть користувача вказати ім'я файлу
+            var fileName = prompt("Enter the name for the combined file (include extension):");
+            if (fileName) {
+                link.download = fileName;
+                link.click();
+            } else {
+                alert("Please enter a valid file name.");
             }
         }
     </script>
