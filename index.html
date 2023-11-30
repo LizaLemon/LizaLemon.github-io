@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="keywords" content="VIMEO, VIDEOS, combines two files or URL into one videoplayer,
+	file merging, video, audio, multimedia, online playback, video merging, audio player, media player,
+	file playback, technology, video and audio synchronization, multimedia content">
+    <meta name="description" content="The player combines two files or URLs into one video.">
+    <meta name="robots" content="index, follow">
+    <meta name="author" content="Liza and Lemon indie games">
+    <title>LIZA & LEMON PLAYER 🧐🍋</title>
+<link rel="icon" href="https://drive.google.com/uc?id=1rY6f3c4Z0fKvglmy5l_AZfJwQqfdfJ0p" type="image/png">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: #f5f7f6;
+            background-image: url('https://drive.google.com/uc?export=download&id=1S9TfVpu3Hz7kiwebJt7nU_wDGXvLGO7s');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            height: 100vh;
+            margin: 0;
+			padding: 0;
+        }
+
+        #customTimeRange {
+            width: 100%;
+            margin-top: 10px;
+            margin-bottom: 10px;
+        }
+
+        input[type="range"] {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 10px;
+            border-radius: 5px;
+            background: #d3d3d3;
+            outline: none;
+            opacity: 0.7;
+            -webkit-transition: .2s;
+            transition: opacity .2s;
+        }
+
+        input[type="range"]:hover {
+            opacity: 1;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #997ffa;
+            cursor: pointer;
+            z-index: 2;
+        }
+
+        input[type="range"]::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #997ffa;
+            cursor: pointer;
+            z-index: 2;
+        }
+
+        #header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 92%;
+            margin-top: 10px;
+            margin-bottom: 10px;
+        }
+
+        #loadButtons {
+            display: flex;
+            align-items: center;
+        }
+
+        .loadButton {
+            margin-right: 10px;
+        }
+
+        #customControls {
+            display: flex;
+            font-size: 18px;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #playButton {
+            display: flex;
+            font-size: 18px;
+            justify-content: center;
+            align-items: center;
+        }
+
+        video, audio {
+            width: 92%;
+        }
+
+        #currentTimeText, #totalTimeText {
+            font-size: 16px;
+        }
+
+        #customTimeRange {
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        a {
+            color: #997ffa;
+            text-decoration: none;
+        }
+		#playPauseButton {
+            display: flex;
+            justify-content: center;
+			width: 100px; /* Фіксована ширина кнопки */
+			font-size: 18px;
+			align-items: center;
+}
+    </style>
+</head>
+<body>
+    <div id="header">
+        <p><b><a href="https://www.instagram.com/liza_and_lemon_indie_games/">LIZA & LEMON PLAYER 🧐🍋</a></b></p>
+
+        <div id="playButton">
+            <button id="customControls" onclick="rewindBothMedia(-15)"><<</button>
+			<button id="playPauseButton" onclick="togglePlayPause()">Play️</button>
+            <button id="customControls" onclick="fastForwardBothMedia(15)">>></button>
+            <button id="customControls" onclick="syncAudioToVideo()">Synchronize</button>
+        </div>
+		<div>
+        <p id="currentTimeText"></p>
+        <p id="totalTimeText"></p>
+		</div>
+			<div>
+		<input type="file" id="videoInput" accept="video/*" style="display: none">
+		<button class="loadButton" onclick="document.getElementById('videoInput').click()">File Video</button>
+
+		<input type="file" id="audioInput" accept="video/mp4, audio/*" style="display: none">
+		<button class="loadButton" onclick="document.getElementById('audioInput').click()">File Audio</button>
+	</div>
+	<div>
+		<button class="loadButton" onclick="loadVideoFromURL()">URL Video</button>
+		<button class="loadButton" onclick="loadAudioFromURL()">URL Audio</button>
+	</div>
+    </div>
+
+    <input type="range" id="customTimeRange" value="0" step="0.1" />
+
+    <video id="videoPlayer" preload="metadata">
+        Your browser does not support the video tag.
+    </video>
+
+    <audio id="audioPlayer" preload="metadata">
+        Your browser does not support the audio tag.
+    </audio>
+
+    <script>
+        var videoPlayer = document.getElementById("videoPlayer");
+        var audioPlayer = document.getElementById("audioPlayer");
+        var currentTimeText = document.getElementById("currentTimeText");
+        var totalTimeText = document.getElementById("totalTimeText");
+        var customTimeRange = document.getElementById("customTimeRange");
+        var updateTimer;
+
+var playPauseButton = document.getElementById("playPauseButton");
+
+function togglePlayPause() {
+    if (videoPlayer.paused || audioPlayer.paused) {
+        playBothMedia();
+    } else {
+        pauseBothMedia();
+    }
+}
+
+function playBothMedia() {
+    if ((videoPlayer.src && videoPlayer.readyState === 4) && (audioPlayer.src && audioPlayer.readyState === 4)) {
+        videoPlayer.play();
+        audioPlayer.play();
+        updateTimer = setInterval(updateCurrentTime, 1000);
+        playPauseButton.innerText = "Pause";
+    } else {
+        alert("Select or load both video and audio before playing.");
+    }
+}
+
+function pauseBothMedia() {
+    videoPlayer.pause();
+    audioPlayer.pause();
+    playPauseButton.innerText = "Play";
+}
+
+
+        function rewindBothMedia(seconds) {
+            if (videoPlayer.readyState === 4 && audioPlayer.readyState === 4) {
+                videoPlayer.currentTime = Math.max(videoPlayer.currentTime + seconds, 0);
+                audioPlayer.currentTime = Math.max(audioPlayer.currentTime + seconds, 0);
+            }
+        }
+
+        function fastForwardBothMedia(seconds) {
+            if (videoPlayer.readyState === 4 && audioPlayer.readyState === 4) {
+                videoPlayer.currentTime = Math.min(videoPlayer.currentTime + seconds, videoPlayer.duration);
+                audioPlayer.currentTime = Math.min(audioPlayer.currentTime + seconds, audioPlayer.duration);
+            }
+        }
+
+        function formatTime(time) {
+            var minutes = Math.floor(time / 60);
+            var seconds = Math.floor(time % 60);
+            return minutes + ':' + (seconds < 10 ? '0' : '') + seconds;
+        }
+
+        // Додайте функцію для завантаження відео з URL
+        function loadVideoFromURL() {
+            var videoURL = prompt("Enter the URL of the video:");
+            if (videoURL) {
+                videoPlayer.src = videoURL;
+                videoPlayer.load();
+            } else {
+                alert("Enter a valid video URL.");
+            }
+        }
+
+        function loadAudioFromURL() {
+            var audioURL = prompt("Enter the URL of the audio:");
+            if (audioURL) {
+                audioPlayer.src = audioURL;
+                audioPlayer.load();
+            } else {
+                alert("Enter a valid audio URL.");
+            }
+        }
+
+        // Оновлений обробник для вибору відео з файлу
+        videoInput.addEventListener('change', function (event) {
+            var file = event.target.files[0];
+            if (file) {
+                videoPlayer.src = URL.createObjectURL(file);
+                videoPlayer.load();
+            }
+        });
+
+        // Оновлений обробник для вибору аудіо з файлу
+        audioInput.addEventListener('change', function (event) {
+            var file = event.target.files[0];
+            if (file) {
+                audioPlayer.src = URL.createObjectURL(file);
+                audioPlayer.load();
+            }
+        });
+
+        customTimeRange.addEventListener('input', function () {
+            var seekToTime = (customTimeRange.value / 100) * videoPlayer.duration;
+            videoPlayer.currentTime = seekToTime;
+            audioPlayer.currentTime = seekToTime;
+            updateCurrentTime();
+        });
+
+		function updateCurrentTime() {
+			var currentTime = formatTime(videoPlayer.currentTime);
+			var totalTime = formatTime(videoPlayer.duration);
+
+			currentTimeText.innerText = currentTime + ' / ' + totalTime;
+			customTimeRange.value = (videoPlayer.currentTime / videoPlayer.duration) * 100;
+		}
+
+        // Замінено 'timeupdate' на 'input' для оновлення шкали часу в реальному часі
+        videoPlayer.addEventListener('input', updateCurrentTime);
+        audioPlayer.addEventListener('input', updateCurrentTime);
+
+        function syncAudioToVideo() {
+            if (videoPlayer.readyState === 4 && audioPlayer.readyState === 4) {
+                audioPlayer.currentTime = videoPlayer.currentTime;
+            } else {
+                alert("Wait for the media to load.");
+            }
+        }
+    </script>
+</body>
+</html>
